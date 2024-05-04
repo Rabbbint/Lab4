@@ -5,6 +5,16 @@ from tkinter import filedialog
 from tkinter import ttk
 from datetime import datetime
 import pytz
+from watchdog.observers import Observer
+from watchdog.events import FileSystemEventHandler
+
+folder_path = None
+folder_df = None
+
+class FolderMonitor(FileSystemEventHandler):
+    def on_any_event(self, event):
+        if not event.is_directory:
+            analyze_folder()
 
 def convert_to_moscow_time(timestamp):
     moscow_tz = pytz.timezone('Europe/Moscow')
@@ -30,6 +40,7 @@ def collect_folder_info(folder_path):
     return file_list
 
 def display_folder_info_in_tree(tree, file_list):
+    tree.delete(*tree.get_children())
     for file_info in file_list:
         tree.insert('', 'end', values=(
             file_info['File Name'],
@@ -50,19 +61,28 @@ def browse_button():
     global folder_path
     folder_path = filedialog.askdirectory()
     folder_path_label.config(text="Путь к папке: " + folder_path)
+    start_monitoring()
+
+def start_monitoring():
+    global observer
+    observer = Observer()
+    event_handler = FolderMonitor()
+    observer.schedule(event_handler, folder_path, recursive=True)
+    observer.start()
+    analyze_folder()
 
 def analyze_folder():
+    global folder_df
     file_list = collect_folder_info(folder_path)
+    folder_df = pd.DataFrame(file_list)
     display_folder_info_in_tree(tree, file_list)
     completion_label.config(text="Анализ завершен и результаты отображены.")
 
 def export_csv():
-    folder_df = pd.DataFrame(collect_folder_info(folder_path))
     export_to_csv(folder_df, 'folder_info.csv')
     completion_label.config(text="Результаты сохранены в формате CSV.")
 
 def export_excel():
-    folder_df = pd.DataFrame(collect_folder_info(folder_path))
     export_to_excel(folder_df, 'folder_info.xlsx')
     completion_label.config(text="Результаты сохранены в формате Excel.")
 
