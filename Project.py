@@ -18,13 +18,14 @@ class FolderMonitor(FileSystemEventHandler):
 from datetime import datetime
 from zoneinfo import ZoneInfo
 
+
 def convert_to_moscow_time(timestamp):
     utc_tz = ZoneInfo('UTC')
     moscow_tz = ZoneInfo('Europe/Moscow')
     utc_time = datetime.utcfromtimestamp(timestamp)
     utc_time = utc_time.replace(tzinfo=utc_tz)
     moscow_time = utc_time.astimezone(moscow_tz)
-    return moscow_time.replace(tzinfo=None)  # Удаляем информацию о часовом поясе
+    return moscow_time.replace(tzinfo=None)
 
 def collect_folder_info(folder_path):
     file_list = []
@@ -41,6 +42,7 @@ def collect_folder_info(folder_path):
             }
             file_list.append(file_info)
     return file_list
+
 
 def display_folder_info_in_tree(tree, file_list):
     tree.delete(*tree.get_children())
