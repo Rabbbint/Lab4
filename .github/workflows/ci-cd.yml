@@ -47,6 +47,7 @@ jobs:
         pytest test_collect_folder_info.py
         pytest test_convert_to_moscow_time.py
         pytest test_export_to_csv_and_excel.py
+        pytest test_utils.py
     - name: Stop xvfb
       run: pkill -f Xvfb
 
