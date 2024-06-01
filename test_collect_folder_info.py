@@ -1,7 +1,8 @@
 import unittest
 import os
 import tempfile
-from Project import collect_folder_info
+from utils import collect_folder_info
+
 class TestCollectFolderInfo(unittest.TestCase):
     def setUp(self):
         self.temp_dir = tempfile.TemporaryDirectory()
