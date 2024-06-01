@@ -8,12 +8,12 @@ from watchdog.events import FileSystemEventHandler
 
 folder_path = None
 folder_df = None
+observer = None
 
 class FolderMonitor(FileSystemEventHandler):
     def on_any_event(self, event):
         if not event.is_directory:
             analyze_folder()
-
 
 from datetime import datetime
 from zoneinfo import ZoneInfo
@@ -24,10 +24,7 @@ def convert_to_moscow_time(timestamp):
     utc_time = datetime.utcfromtimestamp(timestamp)
     utc_time = utc_time.replace(tzinfo=utc_tz)
     moscow_time = utc_time.astimezone(moscow_tz)
-    return moscow_time
-
-
-
+    return moscow_time.replace(tzinfo=None)  # Удаляем информацию о часовом поясе
 
 def collect_folder_info(folder_path):
     file_list = []
@@ -38,9 +35,9 @@ def collect_folder_info(folder_path):
                 'File Name': file,
                 'File Path': file_path,
                 'File Size (in bytes)': os.path.getsize(file_path),
-                'Creation Time': convert_to_moscow_time(os.path.getctime(file_path)).replace(tzinfo=None),
-                'Last Access Time': convert_to_moscow_time(os.path.getatime(file_path)).replace(tzinfo=None),
-                'Last Modification Time': convert_to_moscow_time(os.path.getmtime(file_path)).replace(tzinfo=None)
+                'Creation Time': convert_to_moscow_time(os.path.getctime(file_path)),
+                'Last Access Time': convert_to_moscow_time(os.path.getatime(file_path)),
+                'Last Modification Time': convert_to_moscow_time(os.path.getmtime(file_path))
             }
             file_list.append(file_info)
     return file_list
@@ -72,7 +69,6 @@ def browse_button():
     else:
         completion_label.config(text="Указанная папка не существует или недоступна.")
 
-
 def start_monitoring():
     global observer
     observer = Observer()
@@ -91,7 +87,13 @@ def analyze_folder():
     else:
         completion_label.config(text="Не выбрана папка для анализа.")
 
-
+def stop_monitoring():
+    global observer
+    if observer is not None:
+        observer.stop()
+        observer.join()
+        completion_label.config(text="Мониторинг остановлен.")
+        observer = None
 
 def export_csv():
     if folder_df is not None:
@@ -102,8 +104,11 @@ def export_csv():
 
 
 def export_excel():
-    export_to_excel(folder_df, 'folder_info.xlsx')
-    completion_label.config(text="Результаты сохранены в формате Excel.")
+    if folder_df is not None:
+        export_to_excel(folder_df, 'folder_info.xlsx')
+        completion_label.config(text="Результаты сохранены в формате Excel.")
+    else:
+        completion_label.config(text="Не удалось сохранить результаты, так как папка не была проанализирована.")
 
 # Создание графического интерфейса
 root = tk.Tk()
@@ -127,6 +132,9 @@ export_csv_button.pack()
 
 export_excel_button = tk.Button(root, text="Экспорт в Excel", command=export_excel, **button_style)
 export_excel_button.pack()
+
+stop_button = tk.Button(root, text="Остановить мониторинг", command=stop_monitoring, **button_style)
+stop_button.pack()
 
 completion_label = tk.Label(root, text="", **label_style)
 completion_label.pack()
