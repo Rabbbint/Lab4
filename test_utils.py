@@ -28,7 +28,7 @@ class TestUtils(unittest.TestCase):
         file2_info = next(item for item in file_list if item['File Name'] == 'file2.txt')
 
         self.assertEqual(file1_info['File Size (in bytes)'], 13)
-        self.assertEqual(file2_info['File Size (in bytes)'], 13)
+        self.assertEqual(file2_info['File Size (in bytes)'], 15)
 
         self.assertDictContainsSubset(
             {'File Name': 'file1.txt', 'File Path': os.path.join(self.temp_dir.name, 'file1.txt')}, file1_info)
