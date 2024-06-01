@@ -1,5 +1,6 @@
 import os
 import pandas as pd
+from pathlib import Path
 import tkinter as tk
 from tkinter import filedialog
 from tkinter import ttk
@@ -27,6 +28,15 @@ def convert_to_moscow_time(timestamp):
     moscow_time = utc_time.astimezone(moscow_tz)
     return moscow_time.replace(tzinfo=None)
 
+
+def collect_folder_info(folder_path):
+    folder_info = {}
+    folder_path = Path(folder_path)
+    folder_info['name'] = folder_path.name
+    folder_info['size'] = sum(f.stat().st_size for f in folder_path.glob('**/*') if f.is_file())
+    folder_info['num_files'] = len(list(folder_path.glob('**/*')))
+    folder_info['num_folders'] = len([f for f in folder_path.glob('**/*') if f.is_dir()])
+    return folder_info
 def collect_folder_info(folder_path):
     file_list = []
     for root, dirs, files in os.walk(folder_path):
