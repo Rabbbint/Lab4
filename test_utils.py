@@ -79,7 +79,7 @@ class TestUtils(unittest.TestCase):
         ]
         df = pd.DataFrame(file_list)
 
-        with tempfile.NamedTemporaryFile(delete=False) as temp_file:
+        with tempfile.NamedTemporaryFile(suffix='.xlsx', delete=False) as temp_file:
             export_to_excel(df, temp_file.name)
             df_from_excel = pd.read_excel(temp_file.name)
 
