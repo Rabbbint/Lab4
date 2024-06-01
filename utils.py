@@ -9,14 +9,16 @@ def collect_folder_info(folder_path):
             file_path = os.path.join(root, file)
             file_stats = os.stat(file_path)
             file_info = {
-                "Имя файла": file,
-                "Размер (байт)": file_stats.st_size,
-                "Дата модификации": datetime.datetime.fromtimestamp(file_stats.st_mtime),
-                "Дата создания": datetime.datetime.fromtimestamp(file_stats.st_ctime),
-                "Путь к файлу": file_path
+                "File Name": file,
+                "File Path": file_path,
+                "File Size (in bytes)": file_stats.st_size,
+                "Creation Time": datetime.datetime.fromtimestamp(file_stats.st_ctime),
+                "Last Access Time": datetime.datetime.fromtimestamp(file_stats.st_atime),
+                "Last Modification Time": datetime.datetime.fromtimestamp(file_stats.st_mtime)
             }
             file_list.append(file_info)
     return file_list
+
 
 def convert_to_moscow_time(file_list):
     moscow_tz = datetime.timezone(datetime.timedelta(hours=3))

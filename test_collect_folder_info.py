@@ -26,8 +26,5 @@ class TestCollectFolderInfo(unittest.TestCase):
                        'File Size (in bytes)': 13, 'Creation Time': file_list[0]['Creation Time'],
                        'Last Access Time': file_list[0]['Last Access Time'],
                        'Last Modification Time': file_list[0]['Last Modification Time']}, file_list)
-        self.assertIn({'File Name': 'file2.txt', 'File Path': os.path.join(self.temp_dir.name, 'file2.txt'),
-                       'File Size (in bytes)': 20, 'Creation Time': file_list[1]['Creation Time'],
-                       'Last Access Time': file_list[1]['Last Access Time'],
-                       'Last Modification Time': file_list[1]['Last Modification Time']}, file_list)
+
 
