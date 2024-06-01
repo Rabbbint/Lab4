@@ -23,14 +23,17 @@ class TestUtils(unittest.TestCase):
     def test_collect_folder_info(self):
         file_list = collect_folder_info(self.temp_dir.name)
         self.assertEqual(len(file_list), 2)
-        self.assertIn({'File Name': 'file1.txt', 'File Path': os.path.join(self.temp_dir.name, 'file1.txt'),
-                       'File Size (in bytes)': 13, 'Creation Time': file_list[0]['Creation Time'],
-                       'Last Access Time': file_list[0]['Last Access Time'],
-                       'Last Modification Time': file_list[0]['Last Modification Time']}, file_list)
-        self.assertIn({'File Name': 'file2.txt', 'File Path': os.path.join(self.temp_dir.name, 'file2.txt'),
-                       'File Size (in bytes)': 13, 'Creation Time': file_list[1]['Creation Time'],
-                       'Last Access Time': file_list[1]['Last Access Time'],
-                       'Last Modification Time': file_list[1]['Last Modification Time']}, file_list)
+
+        file1_info = next(item for item in file_list if item['File Name'] == 'file1.txt')
+        file2_info = next(item for item in file_list if item['File Name'] == 'file2.txt')
+
+        self.assertEqual(file1_info['File Size (in bytes)'], 13)
+        self.assertEqual(file2_info['File Size (in bytes)'], 13)
+
+        self.assertDictContainsSubset(
+            {'File Name': 'file1.txt', 'File Path': os.path.join(self.temp_dir.name, 'file1.txt')}, file1_info)
+        self.assertDictContainsSubset(
+            {'File Name': 'file2.txt', 'File Path': os.path.join(self.temp_dir.name, 'file2.txt')}, file2_info)
 
     def test_convert_to_moscow_time(self):
         file_list = [
