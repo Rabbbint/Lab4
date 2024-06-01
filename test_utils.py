@@ -78,4 +78,13 @@ class TestUtils(unittest.TestCase):
         ]
         df = pd.DataFrame(file_list)
 
-        with tempfile.NamedTem
+        with tempfile.NamedTemporaryFile(delete=False) as temp_file:
+            export_to_excel(df, temp_file.name)
+            df_from_excel = pd.read_excel(temp_file.name)
+
+        self.assertEqual(len(df_from_excel), 2)
+        self.assertIn('file1.txt', df_from_excel['File Name'].values)
+        self.assertIn('file2.txt', df_from_excel['File Name'].values)
+        self.assertIn('2023-04-01 12:00:00', df_from_excel['Creation Time'].dt.strftime('%Y-%m-%d %H:%M:%S').values)
+        self.assertIn('2023-04-01 13:00:00', df_from_excel['Creation Time'].dt.strftime('%Y-%m-%d %H:%M:%S').values)
+
