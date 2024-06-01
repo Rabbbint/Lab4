@@ -46,6 +46,6 @@ RUN git clone https://github.com/Rabbbint/Lab4.git
 
 WORKDIR /Laba4
 
-RUN pip install -r requirements.txt
+
 
 CMD ["python", "Project.py"]
