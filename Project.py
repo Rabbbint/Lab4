@@ -123,7 +123,7 @@ browse_button.pack()
 
 folder_path_label = tk.Label(root, text="Путь к папке: ", **label_style)
 folder_path_label.pack()
-
+#жопа а не работа
 analyze_button = tk.Button(root, text="Проанализировать папку", command=analyze_folder, **button_style)
 analyze_button.pack()
 
