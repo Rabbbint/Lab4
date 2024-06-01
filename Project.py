@@ -3,8 +3,6 @@ import pandas as pd
 import tkinter as tk
 from tkinter import filedialog
 from tkinter import ttk
-from datetime import datetime
-import pytz
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 
@@ -16,12 +14,20 @@ class FolderMonitor(FileSystemEventHandler):
         if not event.is_directory:
             analyze_folder()
 
+
+from datetime import datetime
+from zoneinfo import ZoneInfo
+
 def convert_to_moscow_time(timestamp):
-    moscow_tz = pytz.timezone('Europe/Moscow')
+    utc_tz = ZoneInfo('UTC')
+    moscow_tz = ZoneInfo('Europe/Moscow')
     utc_time = datetime.utcfromtimestamp(timestamp)
-    utc_time = pytz.utc.localize(utc_time)
+    utc_time = utc_time.replace(tzinfo=utc_tz)
     moscow_time = utc_time.astimezone(moscow_tz)
     return moscow_time
+
+
+
 
 def collect_folder_info(folder_path):
     file_list = []
@@ -61,7 +67,11 @@ def browse_button():
     global folder_path
     folder_path = filedialog.askdirectory()
     folder_path_label.config(text="Путь к папке: " + folder_path)
-    start_monitoring()
+    if os.path.exists(folder_path):
+        start_monitoring()
+    else:
+        completion_label.config(text="Указанная папка не существует или недоступна.")
+
 
 def start_monitoring():
     global observer
@@ -73,14 +83,23 @@ def start_monitoring():
 
 def analyze_folder():
     global folder_df
-    file_list = collect_folder_info(folder_path)
-    folder_df = pd.DataFrame(file_list)
-    display_folder_info_in_tree(tree, file_list)
-    completion_label.config(text="Анализ завершен и результаты отображены.")
+    if folder_path is not None:
+        file_list = collect_folder_info(folder_path)
+        folder_df = pd.DataFrame(file_list)
+        display_folder_info_in_tree(tree, file_list)
+        completion_label.config(text="Анализ завершен и результаты отображены.")
+    else:
+        completion_label.config(text="Не выбрана папка для анализа.")
+
+
 
 def export_csv():
-    export_to_csv(folder_df, 'folder_info.csv')
-    completion_label.config(text="Результаты сохранены в формате CSV.")
+    if folder_df is not None:
+        export_to_csv(folder_df, 'folder_info.csv')
+        completion_label.config(text="Результаты сохранены в формате CSV.")
+    else:
+        completion_label.config(text="Не удалось сохранить результаты, так как папка не была проанализирована.")
+
 
 def export_excel():
     export_to_excel(folder_df, 'folder_info.xlsx')
