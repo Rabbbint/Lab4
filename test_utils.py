@@ -1,7 +1,7 @@
 import unittest
+import datetime
 import os
 import tempfile
-import datetime
 import pandas as pd
 from io import StringIO
 from utils import collect_folder_info, convert_to_moscow_time, export_to_csv, export_to_excel
@@ -38,10 +38,10 @@ class TestUtils(unittest.TestCase):
             {"Last Modification Time": datetime.datetime(2023, 4, 1, 15, 0, 0)}
         ]
 
-        converted_list = convert_to_moscow_time(file_list)
+        converted_list = [convert_to_moscow_time(file['Last Modification Time'].timestamp()) for file in file_list]
 
-        self.assertEqual(converted_list[0]["Last Modification Time"], datetime.datetime(2023, 4, 1, 15, 0, 0))
-        self.assertEqual(converted_list[1]["Last Modification Time"], datetime.datetime(2023, 4, 1, 18, 0, 0))
+        self.assertEqual(converted_list[0], datetime.datetime(2023, 4, 1, 15, 0, 0))
+        self.assertEqual(converted_list[1], datetime.datetime(2023, 4, 1, 18, 0, 0))
 
     def test_export_to_csv(self):
         file_list = [
@@ -78,15 +78,4 @@ class TestUtils(unittest.TestCase):
         ]
         df = pd.DataFrame(file_list)
 
-        with tempfile.NamedTemporaryFile(delete=False) as temp_file:
-            export_to_excel(df, temp_file.name)
-            df_from_excel = pd.read_excel(temp_file.name)
-
-        self.assertEqual(len(df_from_excel), 2)
-        self.assertIn('file1.txt', df_from_excel['File Name'].values)
-        self.assertIn('file2.txt', df_from_excel['File Name'].values)
-        self.assertIn('2023-04-01 12:00:00', df_from_excel['Creation Time'].dt.strftime('%Y-%m-%d %H:%M:%S').values)
-        self.assertIn('2023-04-01 13:00:00', df_from_excel['Creation Time'].dt.strftime('%Y-%m-%d %H:%M:%S').values)
-
-if __name__ == '__main__':
-    unittest.main()
+        with tempfile.NamedTem
