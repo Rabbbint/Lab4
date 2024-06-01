@@ -38,7 +38,8 @@ class TestUtils(unittest.TestCase):
             {"Last Modification Time": datetime.datetime(2023, 4, 1, 15, 0, 0)}
         ]
 
-        converted_list = [convert_to_moscow_time(file['Last Modification Time'].timestamp()) for file in file_list]
+        converted_list = [convert_to_moscow_time(file['Last Modification Time'].timestamp()).replace(tzinfo=None) for
+                          file in file_list]
 
         self.assertEqual(converted_list[0], datetime.datetime(2023, 4, 1, 15, 0, 0))
         self.assertEqual(converted_list[1], datetime.datetime(2023, 4, 1, 18, 0, 0))
@@ -87,4 +88,3 @@ class TestUtils(unittest.TestCase):
         self.assertIn('file2.txt', df_from_excel['File Name'].values)
         self.assertIn('2023-04-01 12:00:00', df_from_excel['Creation Time'].dt.strftime('%Y-%m-%d %H:%M:%S').values)
         self.assertIn('2023-04-01 13:00:00', df_from_excel['Creation Time'].dt.strftime('%Y-%m-%d %H:%M:%S').values)
-

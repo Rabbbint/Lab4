@@ -102,8 +102,13 @@ def export_csv():
 
 
 def export_excel():
-    export_to_excel(folder_df, 'folder_info.xlsx')
+    export_to_excel(folder_df, 'folder_info')
     completion_label.config(text="Результаты сохранены в формате Excel.")
+
+def export_to_excel(df, output_file):
+    df.to_excel(f"{output_file}.xlsx", index=False)
+
+
 
 # Создание графического интерфейса
 root = tk.Tk()
