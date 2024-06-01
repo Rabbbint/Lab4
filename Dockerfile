@@ -1,10 +1,13 @@
-FROM python:3.10-slim
 
-WORKDIR /app
+FROM python:3.11
 
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+RUN apt-get update
+RUN apt-get install -y git
 
-COPY . .
+RUN git clone https://github.com/Rabbbint/Lab4.git
 
-CMD ["python", "main.py"]
+WORKDIR /Laba4
+
+RUN pip install -r requirements.txt
+
+CMD ["python", "Project.py"]
